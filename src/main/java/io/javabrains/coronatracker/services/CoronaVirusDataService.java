@@ -13,15 +13,20 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import io.javabrains.coronatracker.models.LocationStats;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class CoronaVirusDataService {
+
+	@Autowired
+	RestTemplate restTemplate;
 
 	@Value("${VIRUS_DATA_URL}")
 	String data_url;
@@ -32,16 +37,19 @@ public class CoronaVirusDataService {
 		
 		List<LocationStats> newStats = new ArrayList<>();
 		
-		HttpClient client = HttpClient.newHttpClient();
-		
-		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create(data_url))
-				.build();
-		
-		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//    	HttpClient client = HttpClient.newHttpClient();
+//
+//		HttpRequest request = HttpRequest.newBuilder()
+//				.uri(URI.create(data_url))
+//				.build();
+//
+//		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		String response = restTemplate.getForObject(data_url,String.class);
+
 		StringReader csvBodyReader = null;
 		if(!ObjectUtils.isEmpty(response)) {
-			csvBodyReader = new StringReader(response.body());
+			csvBodyReader = new StringReader(response);
 		}
 		Iterable<CSVRecord> records = null;
 		if(!ObjectUtils.isEmpty(csvBodyReader)) {
