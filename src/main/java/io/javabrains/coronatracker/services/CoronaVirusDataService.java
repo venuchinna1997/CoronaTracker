@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import io.javabrains.coronatracker.models.LocationStats;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @Service
 public class CoronaVirusDataService {
@@ -37,10 +38,14 @@ public class CoronaVirusDataService {
 				.build();
 		
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-		
-		StringReader csvBodyReader = new StringReader(response.body());
-		
-		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
+		StringReader csvBodyReader = null;
+		if(!ObjectUtils.isEmpty(response)) {
+			csvBodyReader = new StringReader(response.body());
+		}
+		Iterable<CSVRecord> records = null;
+		if(!ObjectUtils.isEmpty(csvBodyReader)) {
+			records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
+		}
 		if(!ObjectUtils.isEmpty(records)) {
 			for (CSVRecord record : records) {
 				LocationStats locationStat = new LocationStats();

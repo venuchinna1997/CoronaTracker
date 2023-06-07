@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import io.javabrains.coronatracker.models.LocationStats;
@@ -28,8 +29,13 @@ public class HomeController {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		int totalReportedCases = allStats.stream().mapToInt(stat -> stat.getLatestTotalCases()).sum();
-		int totalNewCases = allStats.stream().mapToInt(stat -> stat.getDiffFromPreviousDay()).sum();
+		int totalReportedCases = 0;
+		int totalNewCases = 0;
+
+		if(!CollectionUtils.isEmpty(allStats)) {
+			totalReportedCases = allStats.stream().mapToInt(stat -> stat.getLatestTotalCases()).sum();
+			totalNewCases = allStats.stream().mapToInt(stat -> stat.getDiffFromPreviousDay()).sum();
+		}
 		model.addAttribute("locationStats", allStats);
 		model.addAttribute("totalReportedCases", totalReportedCases);
 		model.addAttribute("totalNewCases", totalNewCases);
