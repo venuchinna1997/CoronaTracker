@@ -13,17 +13,18 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import io.javabrains.coronatracker.models.LocationStats;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 @Service
 public class CoronaVirusDataService {
-	
-	private static String VIRUS_DATA_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
+
+	@Value("${VIRUS_DATA_URL}")
+	String data_url;
 
 	@PostConstruct
 	@Scheduled(cron="* * 1 * * *")
@@ -34,7 +35,7 @@ public class CoronaVirusDataService {
 		HttpClient client = HttpClient.newHttpClient();
 		
 		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create(VIRUS_DATA_URL))
+				.uri(URI.create(data_url))
 				.build();
 		
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
