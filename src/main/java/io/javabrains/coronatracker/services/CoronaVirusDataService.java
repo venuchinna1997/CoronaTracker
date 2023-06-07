@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import io.javabrains.coronatracker.models.LocationStats;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 @Service
@@ -42,7 +41,6 @@ public class CoronaVirusDataService {
 		StringReader csvBodyReader = new StringReader(response.body());
 		
 		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
-		records = null;
 		if(!ObjectUtils.isEmpty(records)) {
 			for (CSVRecord record : records) {
 				LocationStats locationStat = new LocationStats();
