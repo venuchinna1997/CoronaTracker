@@ -2,10 +2,6 @@ package io.javabrains.coronatracker.services;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +17,16 @@ import org.springframework.stereotype.Service;
 import io.javabrains.coronatracker.models.LocationStats;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CoronaVirusDataService {
 
 	@Autowired
 	RestTemplate restTemplate;
+
+	@Autowired
+	WebClient webClient;
 
 	@Value("${VIRUS_DATA_URL}")
 	String data_url;
@@ -45,7 +45,8 @@ public class CoronaVirusDataService {
 //
 //		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-		String response = restTemplate.getForObject(data_url,String.class);
+		//String response = restTemplate.getForObject(data_url,String.class);
+		String response = webClient.get().uri(data_url).retrieve().toEntity(String.class).block().getBody();
 
 		StringReader csvBodyReader = null;
 		if(!ObjectUtils.isEmpty(response)) {
